@@ -31,6 +31,12 @@ Drawer drawerWidget(BuildContext context){
           trailing: Icon(Icons.people),
           title: Text('settings'),
           onTap: () => Navigator.pushReplacementNamed(context, 'settings'), 
+        ),
+        ListTile(
+          leading: Icon(Icons.security),
+          trailing: Icon(Icons.people),
+          title: Text('Login'),
+          onTap: () => Navigator.pushReplacementNamed(context, 'form'), 
         )
       ],
     ),
