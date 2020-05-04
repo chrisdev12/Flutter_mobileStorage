@@ -42,4 +42,13 @@ class Preferences {
   set name( String name){
     _prefs.setString('name', name);
   }
+
+  //Store the last navigationPage open
+  get lastPage{
+    return _prefs.getString('page') ?? 'home';
+  }
+
+  set lastPage( String name){
+    _prefs.setString('page', name);
+  }
 }

@@ -22,10 +22,13 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   void initState(){
     super.initState();
+
     _textController = new TextEditingController(text: prefs.name);
     //Setters of preferences
     _genre = prefs.genre;
     _secondColor = prefs.secondColor;
+    //NamedRoute of this page
+    prefs.lastPage = 'settings';
   }
 
   _setSelectedRadio(int value) async{

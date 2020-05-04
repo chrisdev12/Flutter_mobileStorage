@@ -9,12 +9,15 @@ void main() async{
   runApp(MyApp());
 }
 class MyApp extends StatelessWidget {
+
+  final prefs = new Preferences();
+  
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Mobile storage',
-      initialRoute: 'home',
+      initialRoute: prefs.lastPage,
       routes: routes(context),
     );
   }

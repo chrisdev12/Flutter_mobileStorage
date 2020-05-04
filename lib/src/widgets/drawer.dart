@@ -16,28 +16,18 @@ Drawer drawerWidget(BuildContext context){
           ),
         ),
         ListTile(
-          leading: Icon(Icons.markunread_mailbox),
+          leading: Icon(Icons.home),
           trailing: Icon(Icons.people),
           title: Text('Home'), 
           onTap: () => Navigator.pushReplacementNamed(context, 'home'), 
         ),
-        ListTile(
-          leading: Icon(Icons.pages),
-          trailing: Icon(Icons.people),
-          title: Text('Pages'),
-          onTap: (){
-            Navigator.popAndPushNamed(context, 'settings');
-          } 
-        ),
-
         /**
          * [PushReplacementNamed] a diferencia de [popAndPushNamed] me permite navegar a una pagina, 
          * pero no me hbailita la opción de devolverme.
          * De forma que era nueva pagina será la que funcione por defecto
          */
-
         ListTile(
-          leading: Icon(Icons.pages),
+          leading: Icon(Icons.settings),
           trailing: Icon(Icons.people),
           title: Text('settings'),
           onTap: () => Navigator.pushReplacementNamed(context, 'settings'), 
