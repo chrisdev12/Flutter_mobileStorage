@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:user_preferences/src/blocs/provider.dart';
 import 'package:user_preferences/src/routes/routes.dart';
 import 'package:user_preferences/src/share_prefs/preferences.dart';
 
@@ -14,11 +15,14 @@ class MyApp extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Mobile storage',
-      initialRoute: prefs.lastPage,
-      routes: routes(context),
+    ///[Provider] must be called here, nor in login to avoid null problem initialization
+    return Provider(
+        child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Mobile storage',
+        initialRoute: prefs.lastPage,
+        routes: routes(context),
+      ),
     );
   }
 }

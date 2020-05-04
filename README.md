@@ -9,4 +9,11 @@ This implementation use https://pub.dev/packages/shared_preferences#-readme-tab-
 ### Store sharedPreferences
 
 1. Store usernamem userGender and define a principal or secondary appBar background.
-2. Store the last page opened (named route) to route it when the app is open again
+2. Store the last page opened (named route) to route it when the app is open again.
+
+
+## Email pattern 
+
+Pattern pattern = r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
+
+
