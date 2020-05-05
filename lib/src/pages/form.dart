@@ -171,9 +171,16 @@ class FormValidationPage extends StatelessWidget {
           elevation: 0.0,
           color: Colors.deepPurple,
           textColor: Colors.white,
-          onPressed: snapshot.hasError?null:(){}
+          onPressed: snapshot.hasError?null:(){_login(context,bloc);}
         );
       }
     );
+  }
+
+  _login(BuildContext context,LoginBloc bloc){
+    print('============');
+    print('email: ${bloc.emailVal}');
+    print('password: ${bloc.passwordVal}');
+    Navigator.pushReplacementNamed(context, 'logged');
   }
 }

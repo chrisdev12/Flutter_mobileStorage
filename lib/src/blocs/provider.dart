@@ -5,14 +5,25 @@ export 'package:user_preferences/src/blocs/login.dart';
 class Provider extends InheritedWidget{
 
   final loginBloc = LoginBloc();
+  static Provider _instance;
 
-  Provider({Key key, Widget child}) : super(key: key, child: child);
+  ///With [singleton]
+  factory Provider({Key key, Widget child}){
+    if (_instance == null){
+      _instance = new Provider._internal(key: key, child: child);
+    }
+    return _instance;
+  }
+  
+  Provider._internal({Key key, Widget child}) : super(key: key, child: child);
+
+  //Without singleton
+  // Provider({Key key, Widget child}) : super(key: key, child: child);
 
   @override
   bool updateShouldNotify(InheritedWidget oldWidget) => true;
 
   static LoginBloc of ( BuildContext context ){
-    print('holi');
     return context.dependOnInheritedWidgetOfExactType<Provider>().loginBloc;
   }
 }
