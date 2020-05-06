@@ -18,6 +18,9 @@ class MyApp extends StatelessWidget {
     ///[Provider] must be called here, nor in login to avoid null problem initialization
     return Provider(
         child: MaterialApp(
+        theme: ThemeData(
+          backgroundColor: (prefs.secondColor) ? Colors.red: Colors.teal
+        ),
         debugShowCheckedModeBanner: false,
         title: 'Mobile storage',
         initialRoute: prefs.lastPage,
