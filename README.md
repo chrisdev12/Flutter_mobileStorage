@@ -18,5 +18,5 @@ Pattern pattern = r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\
 
 ### FormsValidate
 
-Bloc and WidgetInheritance were used to formsValidation.
+Bloc and WidgetInheritance were used to formsValidation in logged page. || FormWidget with his KeyReference was implemented in the product name/price form validation. Both are optimial ways to provide form validation, but the second is easier and faster.
 
