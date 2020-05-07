@@ -1,10 +1,12 @@
+import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:user_preferences/src/models/product_model.dart';
 import 'package:user_preferences/src/providers/products_provider.dart';
 import 'package:user_preferences/src/share_prefs/preferences.dart';
 import 'package:user_preferences/src/utils/numValidator.dart' as utils;
 import 'package:user_preferences/src/widgets/snackBar.dart';
-
+import 'package:image_picker/image_picker.dart';
 class AddProductPage extends StatefulWidget {
   @override
   _AddProductPageState createState() => _AddProductPageState();
@@ -22,6 +24,7 @@ class _AddProductPageState extends State<AddProductPage> {
   bool _saving = false;
   ProductModel product = new ProductModel();
   ProductsProvider api = new ProductsProvider();
+  File photo; //Retrieve the poho of ImagePicker
 
   @override
   Widget build(BuildContext context) {
@@ -38,11 +41,10 @@ class _AddProductPageState extends State<AddProductPage> {
         ),
         backgroundColor: Theme.of(context).backgroundColor,
         actions: <Widget>[
-          IconButton(icon: Icon(Icons.photo_size_select_actual), onPressed: (){}),
-          IconButton(icon: Icon(Icons.camera_alt), onPressed: (){} )
+          IconButton(icon: Icon(Icons.photo_size_select_actual), onPressed: () => _selectImage(ImageSource.gallery)),
+          IconButton(icon: Icon(Icons.camera_alt), onPressed: () => _selectImage(ImageSource.camera))
         ],
       ),
-      floatingActionButton: _floatButton(context,prefs),
       body: SingleChildScrollView(
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 30.0),
@@ -52,6 +54,8 @@ class _AddProductPageState extends State<AddProductPage> {
             key: formKey,
             child: Column(
               children: <Widget>[
+                _renderPhoto(),
+                SizedBox(height: 10.0),
                 _createName(),
                 SizedBox(height: 10.0),
                 _createPrice(),
@@ -64,14 +68,6 @@ class _AddProductPageState extends State<AddProductPage> {
           ),
         )
       )    
-    );
-  }
-
-  Widget  _floatButton(BuildContext context,Preferences prefs) {
-    return FloatingActionButton(
-      child: Icon(Icons.add),
-      onPressed: (){},
-      backgroundColor: Theme.of(context).backgroundColor
     );
   }
 
@@ -141,7 +137,7 @@ class _AddProductPageState extends State<AddProductPage> {
     );
   }
 
-  void _submit(){
+  void _submit() async {
     ///[formKey] is attached to the key defined in the Form.
     ///This function return a bool regards to the validator conditions.
     if(!formKey.currentState.validate()) return;
@@ -151,6 +147,13 @@ class _AddProductPageState extends State<AddProductPage> {
 
     //Disabled the button while the request is being processed to avoid multiple wrong request
     setState((){ _saving = true; });
+
+    if(photo != null){
+      scaffoldKey.currentState.showSnackBar(
+        mySnackbar('Loading, please wait', Icons.done, Colors.blueGrey, 5000)
+      );
+      product.photoUrl = await api.uploadImage(photo);
+    }
 
     if (product.id == null){
       api.createProduct(product);
@@ -163,7 +166,46 @@ class _AddProductPageState extends State<AddProductPage> {
         mySnackbar('Product updated', Icons.update, Colors.blueGrey, 1000)
       );
     }
+    Timer(Duration(milliseconds: 1500), () => Navigator.pop(context));
+  }
 
-    Navigator.pop(context);
+  void _selectImage(ImageSource source) async {
+    ///[pickImage return the path of the photo] and will be 
+    ///available in photo.path
+    photo = await ImagePicker.pickImage(
+      source: source
+    );
+
+    if(photo != null){
+      ///[render a new photo selected] and replace the older that come from firebase. 
+      product.photoUrl = null;
+    }
+    setState(() {
+      _renderPhoto();
+    });
+  }
+
+  Widget _renderPhoto() {
+
+    if(product.photoUrl != null){
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(20.0),
+        child: FadeInImage(
+          placeholder: AssetImage('assets/loading.gif'),
+          image: NetworkImage(product.photoUrl),
+          height: 300.0,
+          fit: BoxFit.contain,
+        )
+      );
+    } else{
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(20.0),
+        child: Image(
+        image: AssetImage( photo?.path ?? 'assets/no-photo.png'),
+        height: 300.0,
+        fit: BoxFit.cover,
+        ),
+      );
+    }
   }
 }

@@ -68,11 +68,42 @@ class ProductPage extends StatelessWidget {
           mySnackbar('Product deleted', Icons.delete_forever, Colors.red, 1500)
         );
       },
-      child: ListTile(
-        title: Text('${product.title} - ${product.value}'),
-        subtitle: Text(product.id),
-        onTap: () => Navigator.pushNamed(context, 'addProduct', arguments: product),
-      ),
+      child: Card(
+        margin: EdgeInsets.symmetric(horizontal: 20.0,vertical: 10.0),
+        child: Column(
+          children: <Widget>[
+            (product.photoUrl == null) 
+              ? _assetImage()
+              :  _networkImage(product.photoUrl),
+            ListTile(
+              title: Text('${product.title} - ${product.value}'),
+              trailing: Text('edit'),
+              subtitle: Text(product.id),
+              onTap: () => Navigator.pushNamed(context, 'addProduct', arguments: product),
+            ),
+          ],
+        ),
+      )
+    );
+  }
+
+  Widget _assetImage(){
+    return Image(
+      image: AssetImage('assets/no-photo.png'),
+      height: 300.0,
+      fit: BoxFit.cover,
+    );
+  }
+
+  Widget _networkImage(String url){
+    return  FadeInImage(
+      placeholder: AssetImage('assets/loading.gif'),
+      image: NetworkImage(url),
+      height: 300.0,
+      fit: BoxFit.cover,
     );
   }
 }
+
+
+
