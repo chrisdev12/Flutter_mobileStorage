@@ -1,146 +1,72 @@
 import 'package:flutter/material.dart';
 import 'package:user_preferences/src/models/product_model.dart';
+import 'package:user_preferences/src/providers/products_provider.dart';
 import 'package:user_preferences/src/share_prefs/preferences.dart';
-import 'package:user_preferences/src/utils/numValidator.dart' as utils;
+import 'package:user_preferences/src/widgets/drawer.dart';
 
-class ProductPage extends StatefulWidget {
-  @override
-  _ProductPageState createState() => _ProductPageState();
-}
-
-class _ProductPageState extends State<ProductPage> {
-
-  ///[Update] Class instances was wrong placed on the Build and was generating a bug
-  ///due that some methods cant access to their properties. Classes should be invoked here.
+class ProductPage extends StatelessWidget {
 
   final prefs = new Preferences();
-  ///[KEY] for get a reference of our form
-  final formKey = GlobalKey<FormState>();
-
-  ProductModel product = new ProductModel();
-
+  final product = new ProductModel();
+  final api = new ProductsProvider();
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'Products'
-        ),
-        backgroundColor: Theme.of(context).backgroundColor,
-        actions: <Widget>[
-          IconButton(icon: Icon(Icons.photo_size_select_actual), onPressed: (){}),
-          IconButton(icon: Icon(Icons.camera_alt), onPressed: (){} )
-        ],
+        title: Text('My products'),
       ),
-      floatingActionButton: _floatButton(context,prefs),
-      body: SingleChildScrollView(
-        child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 30.0),
-          ///[Form widget] works in a similar way a HTML forms,
-          /// allow us control his child with validators and to have a submit-button trigger 
-          child: Form(
-            key: formKey,
-            child: Column(
-              children: <Widget>[
-                _createName(),
-                SizedBox(height: 10.0),
-                _createPrice(),
-                SizedBox(height: 10.0),
-                _createAvailable(),
-                SizedBox(height: 20.0),
-                _createButton(),
-              ]
-            )
-          ),
-        )
-      )    
+      drawer: drawerWidget(context),
+      floatingActionButton: _floatButton(context, prefs),
+      body: _productsList(),
     );
   }
 
   Widget  _floatButton(BuildContext context,Preferences prefs) {
     return FloatingActionButton(
       child: Icon(Icons.add),
-      onPressed: (){},
-      backgroundColor: Theme.of(context).backgroundColor
-    );
-  }
-
-  Widget _createName() {
-
-    return TextFormField(
-      initialValue: product.title,
-      textCapitalization: TextCapitalization.sentences,
-      decoration: InputDecoration(
-        labelText: 'Product'
-      ),
-      validator: (value){
-        if(value.length < 3){
-          return 'Please insert the product name';
-        } else {
-          return null;
-        }
+      backgroundColor: Theme.of(context).backgroundColor,
+      onPressed: (){
+        Navigator.pushNamed(context, 'addProduct');
       },
-      ///[OnSave] is executed once time the form is submmited
-      onSaved:(value) => product.title = value,
     );
   }
 
-  Widget _createPrice() {
-
-    return TextFormField(
-      initialValue: product.value.toString(),
-      keyboardType: TextInputType.numberWithOptions(decimal:true),
-      decoration: InputDecoration(
-        labelText: 'Price'
-      ),
-      validator: (value){
-
-        if (utils.isNumeric(value)){
-          return null; 
+  Widget _productsList() {
+    return FutureBuilder(
+      future: api.getProducts(),
+      builder: (BuildContext context, AsyncSnapshot<List<ProductModel>> snapshot){
+        if(snapshot.hasData){
+          return ListView.builder(
+            itemCount: snapshot.data.length,
+            ///[How Render] each element of the data [list]
+            itemBuilder: (context,i) => _renderProduct(snapshot.data[i], context)
+          );
         } else{
-          return 'Only numbers';
+          return Center(
+            child: CircularProgressIndicator(),
+          );
         }
       },
-      onSaved:(value) => product.value = double.parse(value)
     );
   }
 
-  Widget _createAvailable() {
+  Widget _renderProduct(ProductModel product, BuildContext context){
 
-    return SwitchListTile(
-      value: product.available,
-      title: Text('Availability'),
-      onChanged: (value) => setState(() {
-        print(value);
-        product.available = value;
-      })
-    );
-  }
-
-  Widget _createButton() {
-
-    return RaisedButton.icon(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20.0)
+    return Dismissible(
+      key: UniqueKey(),
+      background: Container(
+        color: Colors.red,
       ),
-      color: Theme.of(context).backgroundColor,
-      textColor: Colors.white,
-      icon: Icon(Icons.save, color: Colors.white),
-      label: Text('Save'),
-      onPressed: _submit
+      direction: DismissDirection.endToStart,
+      onDismissed: (dismiss){
+        print(dismiss);
+      },
+      child: ListTile(
+        title: Text('${product.title} - ${product.value}'),
+        subtitle: Text(product.id),
+        onTap: () => Navigator.pushNamed(context, 'addProduct'),
+      ),
     );
-  }
-
-  void _submit(){
-    ///[formKey] is attached to the key defined in the Form.
-    ///This function return a bool regards to the validator conditions.
-    formKey.currentState.validate();
-
-    ///[To fire the onSaved] that have the TextFormFields, this method should be called:
-    formKey.currentState.save();
-
-    print(product.available);
-    print(product.title);
-    print(product.value);
   }
 }
