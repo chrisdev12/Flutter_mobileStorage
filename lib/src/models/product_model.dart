@@ -8,14 +8,14 @@ class ProductModel {
 
   String id;
   String title;
-  double value;
+  int value;
   bool available;
   String photoUrl;
 
   ProductModel({
     this.id,
     this.title = '',
-    this.value  = 0.0,
+    this.value  = 0,
     this.available = true,
     this.photoUrl,
   });
@@ -29,7 +29,7 @@ class ProductModel {
   );
 
   Map<String, dynamic> toJson() => {
-    "id"        : id,
+    // "id"        : id, avoid add unnecessary Id to firebase (they already define it)
     "title"     : title,
     "value"     : value,
     "available" : available,

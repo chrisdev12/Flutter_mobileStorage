@@ -7,11 +7,12 @@ class ProductsProvider{
 
   final String _url = 'https://flutterproducts-ec3b8.firebaseio.com';
 
-  Future<bool> createProduct(ProductModel product) async{
+  Future<String> createProduct(ProductModel product) async{
 
     final reqUrl = '$_url/products.json';
     final res = await http.post(reqUrl, body: productModelToJson(product));
-    return json.decode(res.body);
+    final resDecoded =  json.decode(res.body); //Firebase res return a Map.
+    return resDecoded['name'];
   }
 
   Future<List<ProductModel>> getProducts() async{
@@ -30,5 +31,23 @@ class ProductsProvider{
     });
 
     return products;
+  }
+
+  Future deleteProduct(String id) async{
+
+    final reqUrl = '$_url/products/$id.json';
+    final res = await http.delete(reqUrl);
+    
+    return json.decode(res.body);
+  }
+
+  Future updateProduct(ProductModel product) async{
+
+    final reqUrl = '$_url/products/${product.id}.json';
+    final res = await http.put(reqUrl,
+      body: productModelToJson(product) 
+    );
+    
+    return json.decode(res.body);
   }
 }

@@ -3,18 +3,21 @@ import 'package:user_preferences/src/models/product_model.dart';
 import 'package:user_preferences/src/providers/products_provider.dart';
 import 'package:user_preferences/src/share_prefs/preferences.dart';
 import 'package:user_preferences/src/widgets/drawer.dart';
+import 'package:user_preferences/src/widgets/snackBar.dart';
 
 class ProductPage extends StatelessWidget {
 
   final prefs = new Preferences();
   final product = new ProductModel();
   final api = new ProductsProvider();
-  
+  final scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: scaffoldKey,
       appBar: AppBar(
         title: Text('My products'),
+        backgroundColor: Theme.of(context).backgroundColor
       ),
       drawer: drawerWidget(context),
       floatingActionButton: _floatButton(context, prefs),
@@ -60,12 +63,15 @@ class ProductPage extends StatelessWidget {
       ),
       direction: DismissDirection.endToStart,
       onDismissed: (dismiss){
-        print(dismiss);
+        api.deleteProduct(product.id);
+        scaffoldKey.currentState.showSnackBar(
+          mySnackbar('Product deleted', Icons.delete_forever, Colors.red, 1500)
+        );
       },
       child: ListTile(
         title: Text('${product.title} - ${product.value}'),
         subtitle: Text(product.id),
-        onTap: () => Navigator.pushNamed(context, 'addProduct'),
+        onTap: () => Navigator.pushNamed(context, 'addProduct', arguments: product),
       ),
     );
   }

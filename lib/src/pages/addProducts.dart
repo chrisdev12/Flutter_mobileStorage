@@ -3,6 +3,7 @@ import 'package:user_preferences/src/models/product_model.dart';
 import 'package:user_preferences/src/providers/products_provider.dart';
 import 'package:user_preferences/src/share_prefs/preferences.dart';
 import 'package:user_preferences/src/utils/numValidator.dart' as utils;
+import 'package:user_preferences/src/widgets/snackBar.dart';
 
 class AddProductPage extends StatefulWidget {
   @override
@@ -15,15 +16,22 @@ class _AddProductPageState extends State<AddProductPage> {
   ///due that some methods cant access to their properties. Classes should be invoked here.
 
   final prefs = new Preferences();
-  ///[KEY] for get a reference of our form
+  ///[KEY] for get a reference of our form and scaffold
   final formKey = GlobalKey<FormState>();
-
+  final scaffoldKey = GlobalKey<ScaffoldState>();
+  bool _saving = false;
   ProductModel product = new ProductModel();
   ProductsProvider api = new ProductsProvider();
 
   @override
   Widget build(BuildContext context) {
+    final ProductModel prodData = ModalRoute.of(context).settings.arguments;
+    if(prodData != null){
+      product = prodData;
+    }
+
     return Scaffold(
+      key: scaffoldKey,
       appBar: AppBar(
         title: Text(
           'Products'
@@ -70,7 +78,7 @@ class _AddProductPageState extends State<AddProductPage> {
   Widget _createName() {
 
     return TextFormField(
-      initialValue: product.title,
+      initialValue:  product.title,
       textCapitalization: TextCapitalization.sentences,
       decoration: InputDecoration(
         labelText: 'Product'
@@ -103,7 +111,7 @@ class _AddProductPageState extends State<AddProductPage> {
           return 'Only numbers';
         }
       },
-      onSaved:(value) => product.value = double.parse(value)
+      onSaved:(value) => product.value = int.parse(value)
     );
   }
 
@@ -129,22 +137,33 @@ class _AddProductPageState extends State<AddProductPage> {
       textColor: Colors.white,
       icon: Icon(Icons.save, color: Colors.white),
       label: Text('Save'),
-      onPressed: _submit
+      onPressed: (_saving) ? null : _submit
     );
   }
 
   void _submit(){
     ///[formKey] is attached to the key defined in the Form.
     ///This function return a bool regards to the validator conditions.
-    formKey.currentState.validate();
-
+    if(!formKey.currentState.validate()) return;
+      
     ///[To fire the onSaved] that have the TextFormFields, this method should be called:
-    formKey.currentState.save();
+    formKey.currentState.save(); 
 
-    print(product.available);
-    print(product.title);
-    print(product.value);
+    //Disabled the button while the request is being processed to avoid multiple wrong request
+    setState((){ _saving = true; });
 
-    // api.createProduct(product);
+    if (product.id == null){
+      api.createProduct(product);
+      scaffoldKey.currentState.showSnackBar(
+        mySnackbar('Product created', Icons.done, Colors.greenAccent, 1000)
+      );
+    } else{
+      api.updateProduct(product); 
+      scaffoldKey.currentState.showSnackBar(
+        mySnackbar('Product updated', Icons.update, Colors.blueGrey, 1000)
+      );
+    }
+
+    Navigator.pop(context);
   }
 }
