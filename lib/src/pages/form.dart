@@ -69,9 +69,9 @@ class FormValidationPage extends StatelessWidget {
   Widget _loginForm(BuildContext context) {
 
     ///[Provider.of(context)] = Start a bottom-up search through the widgets on the Widget's three
-    /// until found where Provider was init,and then call his instance of LoginBloc
+    /// until found where Provider was init,[and then call his instance of LoginBloc]
     final bloc = Provider.of(context);
-
+  
     final size = MediaQuery.of(context).size;
     return SingleChildScrollView(
       child: Column(
@@ -107,7 +107,7 @@ class FormValidationPage extends StatelessWidget {
               ],
             )
           ),
-          Text('Forgot the password ?'),
+          _registerButton(context),
           SizedBox(height: 30.0)
         ],
       ),
@@ -171,7 +171,7 @@ class FormValidationPage extends StatelessWidget {
           elevation: 0.0,
           color: Colors.deepPurple,
           textColor: Colors.white,
-          onPressed: snapshot.hasError?null:(){_login(context,bloc);}
+          onPressed: snapshot.hasData ? (){_login(context,bloc);} : null
         );
       }
     );
@@ -182,5 +182,13 @@ class FormValidationPage extends StatelessWidget {
     print('email: ${bloc.emailVal}');
     print('password: ${bloc.passwordVal}');
     Navigator.pushReplacementNamed(context, 'logged');
+  }
+
+  Widget _registerButton(BuildContext context) {
+
+    return FlatButton(
+      onPressed: () => Navigator.pushNamed(context, 'register'),
+      child: Text('Register now')
+    );
   }
 }
