@@ -1,31 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:user_preferences/src/blocs/products_bloc.dart';
+import 'package:user_preferences/src/blocs/provider.dart';
 import 'package:user_preferences/src/models/product_model.dart';
-import 'package:user_preferences/src/providers/products_provider.dart';
-import 'package:user_preferences/src/share_prefs/preferences.dart';
 import 'package:user_preferences/src/widgets/drawer.dart';
 import 'package:user_preferences/src/widgets/snackBar.dart';
 
 class ProductPage extends StatelessWidget {
 
-  final prefs = new Preferences();
   final product = new ProductModel();
-  final api = new ProductsProvider();
   final scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
+    ///[Provider.products] works same that .of in loginForm. search the provider
+    /// in the widgets Three and do an init of the productsBloc class
+    final productsBloc = Provider.products(context);
+    productsBloc.getProducts();
     return Scaffold(
       key: scaffoldKey,
       appBar: AppBar(
         title: Text('My products'),
         backgroundColor: Theme.of(context).backgroundColor
       ),
+      body: _productsList(productsBloc),
       drawer: drawerWidget(context),
-      floatingActionButton: _floatButton(context, prefs),
-      body: _productsList(),
+      floatingActionButton: _floatButton(context),
     );
   }
 
-  Widget  _floatButton(BuildContext context,Preferences prefs) {
+  Widget  _floatButton(BuildContext context) {
     return FloatingActionButton(
       child: Icon(Icons.add),
       backgroundColor: Theme.of(context).backgroundColor,
@@ -35,15 +38,15 @@ class ProductPage extends StatelessWidget {
     );
   }
 
-  Widget _productsList() {
-    return FutureBuilder(
-      future: api.getProducts(),
+  Widget _productsList(ProductsBloc productsBloc) {
+    return StreamBuilder(
+      stream: productsBloc.productsStream,
       builder: (BuildContext context, AsyncSnapshot<List<ProductModel>> snapshot){
         if(snapshot.hasData){
           return ListView.builder(
             itemCount: snapshot.data.length,
             ///[How Render] each element of the data [list]
-            itemBuilder: (context,i) => _renderProduct(snapshot.data[i], context)
+            itemBuilder: (context,i) => _renderProduct(snapshot.data[i], context, productsBloc)
           );
         } else{
           return Center(
@@ -54,7 +57,7 @@ class ProductPage extends StatelessWidget {
     );
   }
 
-  Widget _renderProduct(ProductModel product, BuildContext context){
+  Widget _renderProduct(ProductModel product, BuildContext context,ProductsBloc productsBloc){
 
     return Dismissible(
       key: UniqueKey(),
@@ -62,11 +65,11 @@ class ProductPage extends StatelessWidget {
         color: Colors.red,
       ),
       direction: DismissDirection.endToStart,
-      onDismissed: (dismiss){
-        api.deleteProduct(product.id);
+      onDismissed: (direction){
         scaffoldKey.currentState.showSnackBar(
-          mySnackbar('Product deleted', Icons.delete_forever, Colors.red, 1500)
+          mySnackbar('Product deleted', Icons.delete_forever, Colors.redAccent, 1500)
         );
+        return productsBloc.deleteProduct(product.id);
       },
       child: Card(
         margin: EdgeInsets.symmetric(horizontal: 20.0,vertical: 10.0),

@@ -4,10 +4,12 @@ import 'package:mime_type/mime_type.dart';
 import 'package:user_preferences/src/models/product_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
+// import 'package:user_preferences/src/share_prefs/preferences.dart';
 
 class ProductsProvider{
 
   final String _url = 'https://flutterproducts-ec3b8.firebaseio.com';
+  // final _prefs = new Preferences(); //Use token if is needed : '$_url/products.json?auth=${_prefs.token}';
 
   Future<String> createProduct(ProductModel product) async{
 

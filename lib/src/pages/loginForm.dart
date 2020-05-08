@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:user_preferences/src/blocs/provider.dart';
+import 'package:user_preferences/src/providers/user_provider.dart';
 import 'package:user_preferences/src/share_prefs/preferences.dart';
+import 'package:user_preferences/src/widgets/alertWidget.dart';
 import 'package:user_preferences/src/widgets/drawer.dart';
 
-class FormValidationPage extends StatelessWidget {
+class LoginValidationPage extends StatelessWidget {
+
+  final user = new UserProvider();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -177,11 +182,18 @@ class FormValidationPage extends StatelessWidget {
     );
   }
 
-  _login(BuildContext context,LoginBloc bloc){
+  _login(BuildContext context,LoginBloc bloc) async {
     print('============');
     print('email: ${bloc.emailVal}');
     print('password: ${bloc.passwordVal}');
-    Navigator.pushReplacementNamed(context, 'logged');
+
+    final logInfo = await user.login(bloc.emailVal, bloc.passwordVal);
+
+    if(logInfo['ok']){
+      Navigator.pushReplacementNamed(context, 'logged');
+    } else{
+      showAlert(context,'Ups, verifica tus datos','Email o contraseña incorrectos, verifica de nuevo');
+    }
   }
 
   Widget _registerButton(BuildContext context) {

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:user_preferences/src/blocs/login.dart';
+import 'package:user_preferences/src/blocs/products_bloc.dart';
 export 'package:user_preferences/src/blocs/login.dart';
 
 class Provider extends InheritedWidget{
 
-  final loginBloc = LoginBloc();
+  final loginBloc     = new LoginBloc();
+  final _productsBloc = new ProductsBloc();
   static Provider _instance;
 
   ///With [singleton]
@@ -25,5 +27,9 @@ class Provider extends InheritedWidget{
 
   static LoginBloc of ( BuildContext context ){
     return context.dependOnInheritedWidgetOfExactType<Provider>().loginBloc;
+  }
+
+  static ProductsBloc products( BuildContext context ){
+    return context.dependOnInheritedWidgetOfExactType<Provider>()._productsBloc;
   }
 }

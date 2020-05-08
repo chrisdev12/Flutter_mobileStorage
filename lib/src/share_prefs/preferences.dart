@@ -51,4 +51,13 @@ class Preferences {
   set lastPage( String name){
     _prefs.setString('page', name);
   }
+
+  //Token firebase
+  get token{
+    return _prefs.getString('token') ?? '';
+  }
+
+  set token( String token){
+    _prefs.setString('token', token);
+  }
 }

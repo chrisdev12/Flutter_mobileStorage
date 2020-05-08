@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:user_preferences/src/pages/addProducts.dart';
-import 'package:user_preferences/src/pages/form.dart';
+import 'package:user_preferences/src/pages/loginForm.dart';
 import 'package:user_preferences/src/pages/home.dart';
 import 'package:user_preferences/src/pages/logged.dart';
 import 'package:user_preferences/src/pages/products.dart';
@@ -11,7 +11,7 @@ Map<String, Widget Function(BuildContext)> routes(context){
   return {
     'home': (BuildContext context) => HomePage(),
     'settings': (BuildContext context) => SettingsPage(),
-    'form' : (BuildContext context) => FormValidationPage(),
+    'login' : (BuildContext context) => LoginValidationPage(),
     'logged': (BuildContext context) => LoggedExample(),
     'products': (BuildContext context) => ProductPage(),
     'addProduct': (BuildContext context) => AddProductPage(),

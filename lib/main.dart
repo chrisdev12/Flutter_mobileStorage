@@ -11,11 +11,12 @@ void main() async{
 }
 class MyApp extends StatelessWidget {
 
-  final prefs = new Preferences();
-  
   @override
   Widget build(BuildContext context) {
+    final prefs = new Preferences();
+
     ///[Provider] must be called here, nor in login to avoid null problem initialization
+  
     return Provider(
         child: MaterialApp(
         theme: ThemeData(

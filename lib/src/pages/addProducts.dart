@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:user_preferences/src/blocs/products_bloc.dart';
+import 'package:user_preferences/src/blocs/provider.dart';
 import 'package:user_preferences/src/models/product_model.dart';
-import 'package:user_preferences/src/providers/products_provider.dart';
 import 'package:user_preferences/src/share_prefs/preferences.dart';
 import 'package:user_preferences/src/utils/numValidator.dart' as utils;
 import 'package:user_preferences/src/widgets/snackBar.dart';
@@ -23,12 +24,14 @@ class _AddProductPageState extends State<AddProductPage> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
   bool _saving = false;
   ProductModel product = new ProductModel();
-  ProductsProvider api = new ProductsProvider();
   File photo; //Retrieve the poho of ImagePicker
+  ProductsBloc productsBloc;
 
   @override
   Widget build(BuildContext context) {
+    productsBloc = Provider.products(context);
     final ProductModel prodData = ModalRoute.of(context).settings.arguments;
+    
     if(prodData != null){
       product = prodData;
     }
@@ -152,16 +155,16 @@ class _AddProductPageState extends State<AddProductPage> {
       scaffoldKey.currentState.showSnackBar(
         mySnackbar('Loading, please wait', Icons.done, Colors.blueGrey, 5000)
       );
-      product.photoUrl = await api.uploadImage(photo);
+      product.photoUrl = await productsBloc.uploadPhoto(photo);
     }
 
     if (product.id == null){
-      api.createProduct(product);
+      productsBloc.addProduct(product);
       scaffoldKey.currentState.showSnackBar(
         mySnackbar('Product created', Icons.done, Colors.greenAccent, 1000)
       );
     } else{
-      api.updateProduct(product); 
+      productsBloc.editProduct(product); 
       scaffoldKey.currentState.showSnackBar(
         mySnackbar('Product updated', Icons.update, Colors.blueGrey, 1000)
       );
